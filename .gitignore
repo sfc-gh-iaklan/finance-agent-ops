@@ -1,0 +1,19 @@
+.streamlit/secrets.toml
+__pycache__/
+*.pyc
+.env
+.eval_tmp/
+
+# Evaluation/health check outputs (generated, not source)
+*.json
+!config/**/*.json
+!examples/**/*.json
+
+# Auto-generated question-bank previews (issue #21). Drafts to be reviewed and
+# promoted up into question_banks/<type>/; the promoted (curated) banks stay tracked.
+examples/*/question_banks/**/generated/
+
+# SiS deploy output
+monitoring/output/
+# SiS descriptor rendered from snowflake.yml.template (gitignored; template is tracked)
+monitoring/snowflake.yml

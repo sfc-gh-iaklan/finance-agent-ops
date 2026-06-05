@@ -1,0 +1,55 @@
+# Instance config — YOUR project's configuration.
+#
+# Rename this file to environments.yaml after filling in your values.
+# Universal defaults (llm models, Snowflake credit pricing) live in the
+# framework's config/defaults.yaml and are merged UNDER this file by
+# evaluation/utils.load_config() — so you may override them here if needed.
+#
+# All *_path / *_dir values are resolved relative to THIS instance directory.
+
+environments:
+  dev:
+    database: {{PROJECT_NAME}}_DEV            # e.g. MY_PROJECT_DEV
+    schema: ANALYTICS                         # Schema holding your data tables
+    semantic_schema: SEMANTIC                  # Schema for semantic views + agents
+    warehouse: {{PROJECT_NAME}}_WH            # e.g. MY_PROJECT_WH
+    connection_name: default                  # Named connection in ~/.snowflake/connections.toml
+    semantic_view: {{PROJECT_NAME}}_DEV.SEMANTIC.{{SV_NAME}}
+    agent_name: {{PROJECT_NAME}}_DEV.SEMANTIC.{{AGENT_NAME}}
+    semantic_view_short: {{SV_NAME}}
+    agent_short: {{AGENT_NAME}}
+    sv_yaml_path: semantic_views/dev/{{sv_filename}}.yaml
+    agent_sql_path: agents/dev/{{agent_filename}}.sql
+
+  prod:
+    database: {{PROJECT_NAME}}_PROD           # e.g. MY_PROJECT_PROD
+    schema: ANALYTICS
+    semantic_schema: SEMANTIC
+    warehouse: {{PROJECT_NAME}}_WH
+    connection_name: default
+    semantic_view: {{PROJECT_NAME}}_PROD.SEMANTIC.{{SV_NAME}}
+    agent_name: {{PROJECT_NAME}}_PROD.SEMANTIC.{{AGENT_NAME}}
+    semantic_view_short: {{SV_NAME}}
+    agent_short: {{AGENT_NAME}}
+    sv_yaml_path: semantic_views/prod/{{sv_filename}}.yaml
+    agent_sql_path: agents/prod/{{agent_filename}}.sql
+
+eval:
+  database: {{PROJECT_NAME}}_EVAL             # e.g. MY_PROJECT_EVAL
+  schema: RESULTS
+  monitoring_schema: MONITORING
+  observability_schema: OBSERVABILITY
+  warehouse: {{PROJECT_NAME}}_WH
+  dataset_table: {{AGENT_NAME}}_EVAL_DATASET
+
+# RBAC role names (created by setup/04_rbac_setup.sql).
+roles:
+  analyst: {{PROJECT_NAME}}_ANALYST
+  reviewer: {{PROJECT_NAME}}_REVIEWER
+  deployer: {{PROJECT_NAME}}_DEPLOYER
+  admin: {{PROJECT_NAME}}_ADMIN
+
+# Question bank locations (relative to this instance directory).
+question_banks:
+  agent_dir: question_banks/agent
+  semantic_view_dir: question_banks/semantic_view
