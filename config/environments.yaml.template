@@ -46,7 +46,7 @@ environments:
     semantic_views: []
     agents: []
 
-# Question bank locations (relative to this instance directory).
+# Question bank locations (relative to the repo root).
 question_banks:
   agent_dir: question_banks/agent
   semantic_view_dir: question_banks/semantic_view

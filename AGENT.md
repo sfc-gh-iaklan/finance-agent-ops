@@ -52,42 +52,40 @@ Feature branch → PR (CI: deploy to DEV + evaluate) → Merge to main → CD: p
 
 ```
 Snowflake_AgentOps_Framework/
-├── .cortex/skills/                     # Cortex Code skills for guided setup
-│   └── bootstrap-from-existing.md    # Bootstrap from existing Snowflake environment
-├── setup/                              # Snowflake setup SQL
-│   ├── 00_framework_tables.sql        # All framework objects (tables, views, alerts, tasks)
-│   └── deploy.py                      # Deploy SV/agent to an env (used by CI)
-├── evaluation/                         # Evaluation engine (config-driven)
-│   ├── audit_semantic_view.py          # Best practices audit
-│   ├── audit_agent.py                  # Native EXECUTE_AI_EVALUATION (GPA)
-│   ├── evaluate_semantic_view.py       # Batch SV eval with SQL comparison + LLM judge
+├── .cortex/skills/                     # Cortex Code skills
+│   └── bootstrap-from-existing.md    # Interactive bootstrap from existing env
+├── app/                                # App Runtime monitoring dashboard (Next.js)
+├── ci/                                 # CI/CD — vendor-neutral pipeline docs + examples
+│   ├── README.md                      # Pipeline stages & wiring guide
+│   └── github/                        # GitHub Actions examples
+├── config/                             # All configuration
+│   ├── defaults.yaml                  # Universal: LLM models + credit pricing
+│   ├── environments.yaml.template     # Instance config template
+│   ├── monitoring.yaml.template       # Alert thresholds
+│   └── thresholds.yaml.template       # Eval accuracy thresholds
+├── evaluation/                         # All evaluation + monitoring Python
+│   ├── audit_semantic_view.py         # Best practices audit
+│   ├── audit_agent.py                 # Native GPA evaluation
+│   ├── evaluate_semantic_view.py      # Batch SV eval (SQL + LLM judge)
 │   ├── llm_judge.py                   # LLM-as-a-Judge
 │   ├── discover_account.py            # Account discovery
-│   ├── generate_question_bank.py      # Starter question-bank generator
-│   ├── adversarial_library.yaml       # Curated adversarial patterns
-│   └── utils.py                       # Instance resolver + SF helpers
-├── monitoring/                         # Health check & monitoring
-│   ├── dashboard.py                   # Streamlit in Snowflake dashboard
-│   ├── health_check.py               # Health checks (7 checks)
+│   ├── generate_question_bank.py      # Question-bank generator
+│   ├── health_check.py               # Health checks
 │   ├── cost_reconcile.py             # Cost reconciliation
-│   ├── snowflake.yml.template         # SiS deploy descriptor
-│   └── pyproject.toml                 # SiS dependencies
-├── instance/                           # USER WORKSPACE (populated via skill or manually)
-│   ├── config/*.yaml.template         # Config templates with {{TOKEN}} placeholders
-│   ├── semantic_views/{dev,prod}/     # User's semantic view YAML files
-│   ├── agents/{dev,prod}/             # User's agent SQL files
-│   └── question_banks/               # User's question banks
-├── config/
-│   └── defaults.yaml                  # Universal: LLM models + credit pricing
-├── .github/workflows/                  # CI/CD pipelines
+│   ├── adversarial_library.yaml       # Curated adversarial patterns
+│   └── utils.py                       # Config loader + SF helpers
+├── question_banks/                     # User's question banks
+├── setup/                              # Snowflake setup SQL
+│   ├── 00_framework_tables.sql        # All framework objects
+│   └── deploy.py                      # Deploy SV/agent (CI helper)
 └── docs/                              # Reference & explanation docs
 ```
 
 ## Key Technical Patterns
 
-### Instance Resolution
+### Config Resolution
 
-The active instance is set via the `AIOPS_INSTANCE` env var and defaults to `instance/` in the repo root. The `evaluation/utils.py` module resolves all paths relative to the active instance.
+Config lives in `config/environments.yaml` (created from the template during bootstrap). The `evaluation/utils.py` module loads it and merges with `config/defaults.yaml`. All paths are resolved relative to the repo root.
 
 ### Observability
 - **Primary source**: `snowflake.local.ai_observability_events` (Snowflake's native AI observability view)

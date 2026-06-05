@@ -12,31 +12,39 @@ from datetime import datetime
 
 
 # ---------------------------------------------------------------------------
-# Instance resolution + config loading
+# Config resolution
 #
-# The framework is domain-agnostic. Each deployment ("instance") is a directory
-# that owns its environments/thresholds/monitoring/schedules config + its SV,
-# agent, and question banks. The active instance is chosen by the AIOPS_INSTANCE
-# env var and defaults to the repo's instance/ directory, so the framework works
-# out-of-box and CI needs no extra vars.
+# The framework is domain-agnostic. Configuration lives in <repo_root>/config/:
+#   - defaults.yaml       — universal LLM/pricing defaults
+#   - environments.yaml   — your project's semantic views, agents, framework DB
+#   - thresholds.yaml     — eval accuracy thresholds
+#   - monitoring.yaml     — alert thresholds
+#
+# Question banks live in <repo_root>/question_banks/.
 # ---------------------------------------------------------------------------
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_INSTANCE = os.path.join(REPO_ROOT, "instance")
+CONFIG_DIR = os.path.join(REPO_ROOT, "config")
 
 
-def instance_dir() -> str:
-    """Absolute path to the active instance/example directory."""
-    return os.path.abspath(os.environ.get("AIOPS_INSTANCE", DEFAULT_INSTANCE))
+def config_dir() -> str:
+    """Absolute path to the config directory."""
+    return CONFIG_DIR
 
 
+def repo_path(*relative_parts: str) -> str:
+    """Resolve a path relative to the repo root."""
+    return os.path.join(REPO_ROOT, *relative_parts)
+
+
+# Keep for backwards compat with callers that use instance_path()
 def instance_path(*relative_parts: str) -> str:
-    """Resolve a path that the instance config expresses relative to its own dir."""
-    return os.path.join(instance_dir(), *relative_parts)
+    """Resolve a path relative to the repo root (legacy alias)."""
+    return os.path.join(REPO_ROOT, *relative_parts)
 
 
 def framework_config_dir() -> str:
-    """Directory holding framework-level defaults (config/defaults.yaml)."""
-    return os.path.join(REPO_ROOT, "config")
+    """Directory holding all config files (defaults + instance)."""
+    return CONFIG_DIR
 
 
 def _read_yaml(path: str) -> dict:
@@ -166,16 +174,16 @@ def get_connection(environment: str = "dev") -> snowflake.connector.SnowflakeCon
 
 
 @functools.lru_cache(maxsize=None)
-def _load_config_cached(inst: str) -> dict:
+def _load_config_cached(cfg_dir: str) -> dict:
     # Framework defaults (llm, pricing) merged UNDER the instance config.
-    defaults = _read_yaml(os.path.join(framework_config_dir(), "defaults.yaml"))
-    instance = _read_yaml(os.path.join(inst, "config", "environments.yaml"))
+    defaults = _read_yaml(os.path.join(cfg_dir, "defaults.yaml"))
+    instance = _read_yaml(os.path.join(cfg_dir, "environments.yaml"))
     return _deep_merge(defaults, instance)
 
 
 def load_config() -> dict:
     """Merged config: framework defaults overlaid by the active instance config."""
-    return _load_config_cached(instance_dir())
+    return _load_config_cached(config_dir())
 
 
 def _is_new_config_format(config: dict) -> bool:
@@ -241,12 +249,12 @@ def get_agents(environment: str = "dev") -> list:
 
 
 @functools.lru_cache(maxsize=None)
-def _load_thresholds_cached(inst: str) -> dict:
-    return _read_yaml(os.path.join(inst, "config", "thresholds.yaml"))
+def _load_thresholds_cached(cfg_dir: str) -> dict:
+    return _read_yaml(os.path.join(cfg_dir, "thresholds.yaml"))
 
 
 def load_thresholds() -> dict:
-    return _load_thresholds_cached(instance_dir())
+    return _load_thresholds_cached(config_dir())
 
 
 def get_llm_model(role: str = "model") -> str:
@@ -256,12 +264,12 @@ def get_llm_model(role: str = "model") -> str:
 
 
 def question_bank_dir(bank_type: str) -> str:
-    """Resolve a question-bank directory from instance config (falls back to the
+    """Resolve a question-bank directory from config (falls back to the
     conventional layout). bank_type is 'agent' or 'semantic_view'."""
     qb = load_config().get("question_banks", {})
     key = "agent_dir" if bank_type == "agent" else "semantic_view_dir"
     rel = qb.get(key, os.path.join("question_banks", bank_type))
-    return instance_path(rel)
+    return repo_path(rel)
 
 
 def load_question_bank(bank_type: str, difficulty: str) -> list:

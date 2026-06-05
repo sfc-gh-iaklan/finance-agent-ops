@@ -28,7 +28,6 @@ import os
 import time
 from datetime import datetime
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "evaluation"))
 from utils import get_connection, execute_sql, load_config, call_cortex_agent, call_cortex_analyst, get_framework_config, get_semantic_views, get_agents
 
 

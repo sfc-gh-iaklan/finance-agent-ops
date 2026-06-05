@@ -114,7 +114,7 @@ cp schedules.yaml.template schedules.yaml
 
 4. Execute each SQL script in `setup/` against your Snowflake account (in order: 01, 04, 05, 07, 08, 09, 10, 11), substituting the tokens with your config values.
 
-5. Add your semantic view YAML to `instance/semantic_views/dev/` and agent SQL to `instance/agents/dev/`.
+5. Create question banks in `question_banks/` and run your first evaluation.
 
 ---
 
@@ -122,56 +122,55 @@ cp schedules.yaml.template schedules.yaml
 
 ```
 Snowflake_AgentOps_Framework/
-├── .cortex/skills/                     # Cortex Code skills for guided setup
-│   └── bootstrap-from-existing.md    # Bootstrap from existing Snowflake environment
-├── .github/workflows/                  # CI/CD pipelines
-│   ├── semantic_view_ci.yml            # On PR: audit → evaluate → comment
-│   ├── semantic_view_cd.yml            # On merge: audit gate → eval → promote
-│   ├── agent_ci.yml                    # On PR: native GPA eval → comment
-│   └── agent_cd.yml                   # On merge: native GPA eval gate → promote
-├── config/
-│   └── defaults.yaml                  # Universal defaults: LLM models + credit pricing
-├── docs/                              # Reference & explanation docs
+├── .cortex/skills/                     # Cortex Code skills
+│   └── bootstrap-from-existing.md    # Interactive bootstrap from existing env
+├── app/                                # App Runtime monitoring dashboard (Next.js)
+│   ├── app.yml                        # App Runtime manifest
+│   ├── package.json
+│   ├── app/                           # Next.js pages
+│   │   ├── layout.tsx                 # Nav + layout
+│   │   ├── page.tsx                   # Overview (KPIs + alerts)
+│   │   ├── accuracy/page.tsx          # Eval accuracy trends
+│   │   ├── quality/page.tsx           # Interaction quality flags
+│   │   ├── cost/page.tsx              # Token cost trends
+│   │   └── alerts/page.tsx            # Active alerts
+│   └── lib/snowflake.ts              # Snowflake query helper
+├── ci/                                 # CI/CD — vendor-neutral
+│   ├── README.md                      # Pipeline stages & wiring guide
+│   └── github/                        # GitHub Actions examples
+├── config/                             # All configuration
+│   ├── defaults.yaml                  # Universal: LLM models + credit pricing
+│   ├── environments.yaml.template     # Instance config template
+│   ├── monitoring.yaml.template       # Alert thresholds
+│   └── thresholds.yaml.template       # Eval accuracy thresholds
+├── docs/                               # Reference & explanation docs
 │   ├── README.md                      # Documentation index
 │   ├── explanation/                   # Design & intent
 │   └── reference/                     # Lookup-style: cost model
-├── evaluation/                         # Evaluation engine (config-driven)
-│   ├── audit_semantic_view.py          # Best practices audit (naming, docs, metadata)
-│   ├── audit_agent.py                  # Native EXECUTE_AI_EVALUATION (GPA framework)
-│   ├── evaluate_semantic_view.py       # Batch SV evaluation (SQL comparison + LLM judge)
-│   ├── llm_judge.py                   # LLM-as-a-Judge for SV evaluation
-│   ├── discover_account.py            # Account discovery: agents, SVs, tools, warehouses
+├── evaluation/                         # All evaluation + monitoring Python
+│   ├── audit_semantic_view.py         # Best practices audit (structural)
+│   ├── audit_agent.py                 # Native GPA evaluation
+│   ├── evaluate_semantic_view.py      # Batch SV eval (SQL + LLM judge)
+│   ├── llm_judge.py                   # LLM-as-a-Judge
+│   ├── discover_account.py            # Account discovery
 │   ├── generate_question_bank.py      # Starter question-bank generator
-│   ├── adversarial_library.yaml       # Curated adversarial attack patterns
-│   └── utils.py                       # Instance resolver + Snowflake helpers
-├── instance/                           # YOUR WORKSPACE (populated by CoCo skill or manually)
-│   ├── config/
-│   │   ├── environments.yaml.template  # Project config template
-│   │   ├── thresholds.yaml.template    # Accuracy thresholds template
-│   │   ├── monitoring.yaml.template    # Alert thresholds template
-│   │   └── schedules.yaml.template     # Task schedules template
-│   ├── semantic_views/{dev,prod}/      # Your semantic view YAML files
-│   ├── agents/{dev,prod}/              # Your agent SQL files
-│   └── question_banks/                 # Your question banks
-│       ├── semantic_view/              # Easy, hard, ambiguous questions
-│       └── agent/                      # Answerable, out-of-scope, adversarial
-├── monitoring/                         # Health check & monitoring
-│   ├── dashboard.py                   # Streamlit in Snowflake monitoring dashboard
 │   ├── health_check.py               # Health checks (7 checks)
-│   ├── cost_reconcile.py             # Reconcile estimated vs actual AI Credits
-│   ├── snowflake.yml.template         # SiS deploy descriptor
-│   └── pyproject.toml                 # SiS package dependencies
+│   ├── cost_reconcile.py             # Reconcile estimated vs actual credits
+│   ├── adversarial_library.yaml       # Curated adversarial patterns
+│   └── utils.py                       # Config loader + Snowflake helpers
+├── question_banks/                     # Your question banks
+│   ├── agent/                         # Answerable, OOS, adversarial
+│   └── semantic_view/                 # Easy, hard, ambiguous
 ├── setup/                              # Snowflake setup SQL
 │   ├── 00_framework_tables.sql        # All framework objects (tables, views, alerts, tasks)
-│   └── deploy.py                      # Deploy SV/agent to an env (used by CI)
+│   └── deploy.py                      # Deploy SV/agent to an env (CI helper)
 ├── .gitignore
 ├── AGENT.md                           # CoCo agent instructions
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE
 ├── NOTICE
-├── README.md                          # This file
-├── architecture.html
+├── README.md
 └── requirements.txt
 ```
 

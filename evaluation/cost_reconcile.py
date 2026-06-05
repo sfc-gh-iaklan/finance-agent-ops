@@ -30,8 +30,7 @@ import json
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "evaluation"))
-from utils import get_connection, execute_sql, load_config, get_framework_config  # noqa: E402
+from utils import get_connection, execute_sql, load_config, get_framework_config
 
 
 def _scalar(rows, key, default=0.0):
