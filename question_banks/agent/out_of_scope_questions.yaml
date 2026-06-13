@@ -1,0 +1,35 @@
+questions:
+  - question: "What is the current S&P 500 index value?"
+    ground_truth: "Should politely decline - real-time market data is not available in this dataset"
+    expected_tool: null
+    difficulty: out_of_scope
+
+  - question: "Can you approve this loan application?"
+    ground_truth: "Should decline - the agent cannot perform approval actions, only analyze data"
+    expected_tool: null
+    difficulty: out_of_scope
+
+  - question: "What's the GDP growth rate of the United States?"
+    ground_truth: "Should decline - macroeconomic data is outside the scope of this finance dataset"
+    expected_tool: null
+    difficulty: out_of_scope
+
+  - question: "Send a notification to the compliance team about high-risk accounts"
+    ground_truth: "Should decline - the agent cannot send notifications or emails"
+    expected_tool: null
+    difficulty: out_of_scope
+
+  - question: "Write me a Python script to calculate VaR"
+    ground_truth: "Should decline - the agent is a data analyst, not a code generator"
+    expected_tool: null
+    difficulty: out_of_scope
+
+  - question: "What did our CEO say in the last earnings call?"
+    ground_truth: "Should decline - earnings call transcripts are not in this dataset"
+    expected_tool: null
+    difficulty: out_of_scope
+
+  - question: "How does our performance compare to JPMorgan Chase?"
+    ground_truth: "Should decline - competitor data is not available"
+    expected_tool: null
+    difficulty: out_of_scope

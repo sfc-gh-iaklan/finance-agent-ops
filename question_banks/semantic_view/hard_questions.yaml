@@ -1,0 +1,50 @@
+questions:
+  - question: "What is the average account balance by customer segment?"
+    expected_behavior: "Joins ACCOUNTS to CUSTOMERS, groups by CUSTOMER_SEGMENT, returns AVG(BALANCE)"
+    difficulty: hard
+    tags: [accounts, customers, join, aggregation, segment]
+
+  - question: "Which customers have portfolios with negative YTD returns?"
+    expected_behavior: "Joins PORTFOLIOS to CUSTOMERS, filters YTD_RETURN_PCT < 0, returns customer details"
+    difficulty: hard
+    tags: [portfolios, customers, join, negative-returns]
+
+  - question: "What is the total transaction amount by category for the last 30 days?"
+    expected_behavior: "Filters TRANSACTIONS by date range, groups by CATEGORY, returns SUM(AMOUNT)"
+    difficulty: hard
+    tags: [transactions, category, date-filter, aggregation]
+
+  - question: "Which customers have both high risk assessments and dormant accounts?"
+    expected_behavior: "Multi-table query joining RISK_ASSESSMENTS, ACCOUNTS, CUSTOMERS filtering on RISK_LEVEL and ACCOUNT_STATUS"
+    difficulty: hard
+    tags: [risk, accounts, customers, multi-join, complex-filter]
+
+  - question: "What is the average portfolio return by asset class and risk tolerance?"
+    expected_behavior: "Groups PORTFOLIOS by ASSET_CLASS and RISK_TOLERANCE, returns AVG(YTD_RETURN_PCT)"
+    difficulty: hard
+    tags: [portfolios, asset-class, risk-tolerance, multi-group]
+
+  - question: "Show me the top 5 customers by total transaction volume"
+    expected_behavior: "Joins TRANSACTIONS to ACCOUNTS to CUSTOMERS, aggregates SUM(AMOUNT) per customer, orders DESC LIMIT 5"
+    difficulty: hard
+    tags: [transactions, accounts, customers, top-n, multi-join]
+
+  - question: "What percentage of accounts opened via Mobile have been closed?"
+    expected_behavior: "Filters ACCOUNTS by CHANNEL = 'Mobile', calculates ratio of CLOSED to total"
+    difficulty: hard
+    tags: [accounts, channel, percentage, calculation]
+
+  - question: "Compare average transaction amounts between Credit and Debit directions by month"
+    expected_behavior: "Groups TRANSACTIONS by DIRECTION and month, computes AVG(AMOUNT) for comparison"
+    difficulty: hard
+    tags: [transactions, direction, time-series, comparison]
+
+  - question: "Which High Net Worth customers have unresolved risk assessments?"
+    expected_behavior: "Joins CUSTOMERS to RISK_ASSESSMENTS, filters CUSTOMER_SEGMENT and STATUS != 'Closed'"
+    difficulty: hard
+    tags: [customers, risk, segment-filter, status-filter]
+
+  - question: "What is the unrealized P&L distribution across portfolio strategies?"
+    expected_behavior: "Groups PORTFOLIOS by STRATEGY, returns SUM and AVG of UNREALIZED_PNL"
+    difficulty: hard
+    tags: [portfolios, strategy, pnl, distribution]
