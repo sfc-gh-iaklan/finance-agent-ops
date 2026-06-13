@@ -1,0 +1,50 @@
+questions:
+  - question: "How many customers do we have in each segment?"
+    ground_truth: "Returns count of customers grouped by CUSTOMER_SEGMENT"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "What is the total balance across all open accounts?"
+    ground_truth: "Returns SUM(BALANCE) from ACCOUNTS WHERE ACCOUNT_STATUS = 'Open'"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "Show me the top 10 highest-value portfolios"
+    ground_truth: "Returns top 10 portfolios ordered by TOTAL_VALUE DESC"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "How many flagged transactions occurred via the Mobile App channel?"
+    ground_truth: "Returns count from TRANSACTIONS WHERE IS_FLAGGED = TRUE AND CHANNEL = 'Mobile App'"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "What is the average risk score by risk type?"
+    ground_truth: "Returns AVG(RISK_SCORE) from RISK_ASSESSMENTS grouped by RISK_TYPE"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "Which customers have the highest annual income?"
+    ground_truth: "Returns top customers ordered by ANNUAL_INCOME DESC with names and income"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "What is the breakdown of transaction types by direction?"
+    ground_truth: "Returns count or sum grouped by TRANSACTION_TYPE and DIRECTION"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "Show me portfolios that haven't been rebalanced in the last 30 days"
+    ground_truth: "Returns portfolios WHERE LAST_REBALANCE_DATE < CURRENT_DATE - 30"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "What percentage of risk assessments are still under review?"
+    ground_truth: "Calculates ratio of STATUS = 'Under Review' to total assessments"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
+
+  - question: "What is the average account balance for High Net Worth customers compared to Corporate customers?"
+    ground_truth: "Joins ACCOUNTS to CUSTOMERS, groups by segment, compares AVG(BALANCE)"
+    expected_tool: finance-analytics-assistant
+    difficulty: answerable
